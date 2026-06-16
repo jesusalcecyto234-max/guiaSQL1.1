@@ -1,0 +1,961 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Guía SQL — Temas 1-14 (Futurista)</title>
+  <style>
+    :root{--bg:#050813;--bg2:#0f172a;--surface:#e2e8f0;--surface-muted:#94a3b8;--panel:#0f172a;--accent:#38bdf8;--accent2:#7c3aed;--glow:#22d3ee;--shadow:0 30px 90px rgba(7,15,28,.4);}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;font-family:Inter,Segoe UI,Arial,Helvetica,sans-serif;color:var(--surface);background:radial-gradient(circle at top left,rgba(56,189,248,.14),transparent 18%),radial-gradient(circle at 80% 20%,rgba(168,85,247,.12),transparent 18%),linear-gradient(180deg,#020617 0%,#0f172a 55%,#020617 100%);overflow-x:hidden}
+    body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:120px 120px;pointer-events:none;z-index:0}
+    .main{position:relative;z-index:1;padding:1.2rem 1.5rem;max-width:1120px;margin:0 auto;margin-left:360px}
+    .head{display:grid;gap:1.2rem;margin:0 auto;padding:.85rem 1rem 1.25rem;border-radius:32px;background:rgba(15,23,42,.88);backdrop-filter:blur(18px);box-shadow:var(--shadow);border:1px solid rgba(56,189,248,.15)}
+    .head h1{margin:0;font-size:min(4rem,9vw);letter-spacing:-.05em;line-height:1.02;text-transform:uppercase;text-shadow:0 0 18px rgba(56,189,248,.2)}
+    .subtitle{margin:0;color:var(--surface-muted);max-width:760px;font-size:1.05rem;line-height:1.7}
+    .topic-info{margin:1rem 0 0;padding:1rem;border-radius:22px;background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.15);color:var(--surface-muted);line-height:1.75}
+    aside#side{position:fixed;left:1rem;top:2rem;bottom:2rem;width:320px;background:rgba(7,14,32,.96);color:var(--surface);padding:1.4rem;transition:box-shadow .35s ease;z-index:60;overflow-y:auto;border:1px solid rgba(56,189,248,.18);backdrop-filter:blur(14px);box-shadow:0 35px 120px rgba(7,15,28,.45)}
+    .logo{font-size:1.5rem;font-weight:800;text-transform:uppercase;letter-spacing:.18em;color:#e0f2fe;text-shadow:0 0 18px rgba(56,189,248,.22)}
+    .logo .neon{color:#38bdf8}
+    nav ul{list-style:none;padding:0;margin:1.8rem 0 0}
+    nav li{margin:.45rem 0}
+    nav a{display:block;padding:.75rem 1rem;border-radius:18px;color:rgba(226,232,240,.88);text-decoration:none;font-size:.98rem;transition:transform .2s ease,color .2s ease,background .2s ease}
+    nav a:hover{color:#fff;background:rgba(56,189,248,.16);transform:translateX(3px)}
+    .credits{margin-top:2rem;color:var(--surface-muted);font-size:.92rem;line-height:1.6}
+    .content{margin-top:1.4rem}
+    .topic{display:none;margin-bottom:2rem;padding:1.7rem;border-radius:32px;background:rgba(8,20,42,.88);border:1px solid rgba(56,189,248,.12);box-shadow:var(--shadow);animation:fadeInUp .7s ease both}
+    .topic.active{display:block}
+    .topic .exercise{display:block}
+    .topic h2{margin-top:0;color:#f8fafc;letter-spacing:.01em}
+    .topic p{color:var(--surface-muted);line-height:1.75}
+    .topic table{width:100%;border-collapse:collapse;margin-top:1rem}
+    .topic th,.topic td{border:1px solid rgba(148,163,184,.18);padding:.9rem .9rem;text-align:left}
+    .topic th{background:rgba(56,189,248,.12);color:#e2e8f0}
+    .topic tr:nth-child(even){background:rgba(255,255,255,.03)}
+    pre.sql{margin:1rem 0;padding:1.2rem;border-radius:24px;background:rgba(15,23,42,.96);border:1px solid rgba(71,85,105,.3);overflow:auto;box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);color:#dbeafe}
+    .exercise{margin-top:1.2rem;padding:1.2rem;border-radius:24px;background:rgba(255,255,255,.04);border:1px solid rgba(56,189,248,.12)}
+    .exercise strong{display:block;margin-bottom:.7rem;color:#f8fafc}
+    .exercise button.view-exercise{margin-top:.75rem;padding:.75rem 1rem;border:none;border-radius:18px;background:#38bdf8;color:#020617;cursor:pointer;transition:background .2s ease}
+    .exercise button.view-exercise:hover{background:#0ea5e9}
+    .topic-image{width:100%;max-width:720px;margin:1.25rem auto 0;display:block;border-radius:24px;box-shadow:0 20px 50px rgba(0,0,0,.3);border:1px solid rgba(56,189,248,.16)}
+    .show-answer{display:none}
+    .exercise textarea{min-height:110px}
+    .footer{margin-top:2.5rem;padding-top:2rem;color:var(--surface-muted);text-align:center}
+    @media (max-width:960px){.main{padding:1rem 1rem}.head{padding:1rem}.interactive-panel{padding:1rem}.topic{padding:1.4rem}.action{flex-direction:column}.actions{flex-direction:column}aside#side.open{left:.5rem}}
+    @media (max-width:700px){aside#side{position:static;width:auto;max-height:none;height:auto;margin:1rem;top:auto;bottom:auto;left:auto} .main{margin-left:0;padding-top:0} #menu-toggle{display:none} }
+    @keyframes glowPulse{0%,100%{box-shadow:0 20px 70px rgba(56,189,248,.1)}50%{box-shadow:0 24px 90px rgba(56,189,248,.24)}}
+    @keyframes fadeInUp{0%{opacity:0;transform:translateY(18px)}100%{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body>
+  <aside class="side" id="side">
+    <div class="logo">SQL<span class="neon">Lab</span></div>
+    <nav>
+      <ul>
+        <li><a href="#t1">1. Intro BD Relacional</a></li>
+        <li><a href="#t2">2. Diseño de BD</a></li>
+        <li><a href="#t3">3. Crear BD y tablas</a></li>
+        <li><a href="#t4">4. Modificar y eliminar tablas</a></li>
+        <li><a href="#t5">5. Foreign Key / Normalización</a></li>
+        <li><a href="#t6">6. Insertar registros</a></li>
+        <li><a href="#t7">7. Eliminar registros</a></li>
+        <li><a href="#t8">8. Actualizar registros</a></li>
+        <li><a href="#t9">9. Seleccionar registros</a></li>
+        <li><a href="#t10">10. Operadores lógicos</a></li>
+        <li><a href="#t11">11. Order By / Limit / Top</a></li>
+        <li><a href="#t12">12. Funciones de texto</a></li>
+        <li><a href="#t13">13. Funciones numéricas</a></li>
+        <li><a href="#t14">14. Fechas y horas</a></li>
+      </ul>
+    </nav>
+    <div class="credits">Guía breve • Ejemplos & ejercicios</div>
+  </aside>
+
+  <main class="main">
+    <header class="head">
+      <h1>Guía rápida de SQL — Temas 1–14</h1>
+      <p class="subtitle">Diseño futurista, ejemplos y ejercicios con respuestas ocultas.</p>
+    </header>
+
+    <article class="content">
+      <section id="placeholder" class="topic" style="background: linear-gradient(rgba(8,20,42,.7), rgba(8,20,42,.7)), url('img/planta.jpg') center/cover no-repeat; min-height: 320px; padding: 2.5rem 2rem; background-attachment: fixed;">
+        <h2>Bienvenido a mi guía</h2>
+        <p>Esta guía está diseñada para que explores los conceptos clave de SQL y veas ejemplos útiles para cada tema.</p>
+      </section>
+
+      <!-- Repetir bloque por cada tema -->
+      <section id="t1" class="topic">
+        <h2>1. Intro BD Relacional</h2>
+        <p>Una base de datos relacional es un sistema que almacena información en tablas compuestas por filas y columnas.</p>
+        <div class="topic-info">
+          <strong>¿Qué es?</strong>
+          <p>Una base de datos relacional organiza datos en tablas que se relacionan mediante claves. Cada fila es un registro y cada columna un campo.</p>
+          <strong>Concepto</strong>
+          <p>Organiza la información en diferentes tablas conectadas entre sí. Cada tabla contiene registros (filas) y campos (columnas), lo que facilita el almacenamiento, búsqueda y gestión de datos.</p>
+          <strong>Historia</strong>
+          <p>En 1970, Edgar F. Codd, investigador de IBM, propuso el modelo relacional para organizar datos mediante tablas relacionadas. Este modelo revolucionó la forma de almacenar información y se convirtió en el estándar utilizado por empresas e instituciones de todo el mundo.</p>
+          <strong>¿Qué es un SGBD?</strong>
+          <p>Un Sistema Gestor de Bases de Datos (SGBD) es un software que permite crear, administrar, consultar y proteger bases de datos.</p>
+          <strong>Funciones principales</strong>
+          <ul>
+            <li>Almacenar información.</li>
+            <li>Consultar datos rápidamente.</li>
+            <li>Modificar registros.</li>
+            <li>Controlar el acceso de los usuarios.</li>
+            <li>Mantener la seguridad de los datos.</li>
+          </ul>
+          <strong>Ejemplos de SGBD</strong>
+          <p>MySQL, Oracle Database, SQL Server, PostgreSQL.</p>
+          <strong>Importancia</strong>
+          <p>Las bases de datos relacionales son fundamentales en escuelas, hospitales, bancos y aplicaciones web, ya que permiten gestionar grandes cantidades de información de forma segura, organizada y eficiente.</p>
+        </div>
+        <img class="topic-image" src="img/image.png" alt="Introducción a las bases de datos relacionales" />
+        <div class="topic-info">La imagen muestra cómo dos tablas se conectan mediante una clave foránea para mantener la consistencia entre clientes y pedidos. Esto refuerza la idea de que las bases de datos relacionales almacenan datos en estructuras enlazadas, no en archivos independientes.</div>
+        <pre class="sql">-- Ejemplo de tablas relacionadas
+CREATE TABLE Clientes (
+  ID_Cliente INT PRIMARY KEY,
+  Nombre VARCHAR(100),
+  Correo VARCHAR(150)
+);
+
+CREATE TABLE Pedidos (
+  ID_Pedido INT PRIMARY KEY,
+  ID_Cliente INT,
+  Producto VARCHAR(100),
+  FOREIGN KEY (ID_Cliente) REFERENCES Clientes(ID_Cliente)
+);
+</pre>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>Un sistema bancario usa tablas para clientes, cuentas y transacciones relacionadas.</li>
+            <li>Una tienda online guarda productos y pedidos en tablas vinculadas.</li>
+            <li>Un hospital almacena pacientes, citas y médicos en tablas distintas con claves.</li>
+            <li>Una librería registra autores, libros y ventas sin duplicar información.</li>
+            <li>Una aplicación escolar consulta notas de alumnos junto a sus cursos.</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> ¿Qué ventajas aporta un SGBD frente a guardar datos en archivos separados?
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">Permite relaciones entre tablas, consultas estructuradas con SQL, integridad de datos, seguridad y menor redundancia.</div>
+        </div>
+      </section>
+
+      <section id="t2" class="topic">
+        <h2>2. Diseño de Base de Datos</h2>
+        <p>Buenas prácticas: identificar entidades, atributos y relaciones; normalizar hasta 3NF cuando proceda.</p>
+        <div class="topic-info">El diseño de la base de datos define cómo se almacenan y se relacionan las tablas. Una estructura bien pensada evita redundancia y hace las consultas más rápidas y seguras.</div>
+        <img class="topic-image" src="img/diseño.jpeg" alt="Diseño de base de datos" />
+        <div class="topic-info">El gráfico apoya el diseño mostrando cómo se identifican entidades, atributos y relaciones antes de crear las tablas. Es un recordatorio visual de que un diseño correcto evita redundancias y facilita las consultas posteriores.</div>
+        <pre class="sql">-- Ejemplo: entidades Clientes y Pedidos
+CREATE TABLE clientes (id INT PRIMARY KEY, nombre VARCHAR(100));
+CREATE TABLE pedidos (id INT PRIMARY KEY, cliente_id INT, total DECIMAL(10,2),
+  FOREIGN KEY (cliente_id) REFERENCES clientes(id));
+
+-- Ejemplo adicional: vista de pedidos por cliente
+SELECT c.nombre, p.id, p.total FROM clientes c
+JOIN pedidos p ON c.id = p.cliente_id;
+</pre>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>Entidades: cliente, pedido, producto.</li>
+            <li>Atributos: nombre, dirección, precio, fecha.</li>
+            <li>Relaciones: un cliente puede tener muchos pedidos.</li>
+            <li>Una tabla de detalle de pedido conecta pedidos y productos.</li>
+            <li>Una vista puede mostrar clientes con totales de ventas.</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Dibuja (mentalmente) el diagrama entidad-relación para clientes y pedidos e indica cardinalidades.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">Un cliente puede tener 0..N pedidos; cada pedido pertenece a exactamente 1 cliente (1..N).</div>
+        </div>
+      </section>
+
+      <section id="t3" class="topic">
+        <h2>3. Crear BD y tablas / Restricciones</h2>
+        <p>Crear bases de datos y tablas, y añadir constraints: PRIMARY KEY, UNIQUE, NOT NULL, CHECK.</p>
+        <div class="topic-info">Las restricciones aseguran la calidad de los datos: PRIMARY KEY identifica registros, UNIQUE evita duplicados, NOT NULL obliga un valor y CHECK verifica condiciones lógicas.</div>
+        <img class="topic-image" src="img/brayan.png" alt="Reglas de juego para crear base de datos" />
+        <img class="topic-image" src="img/brayan1.png" alt="Reglas de juego para crear base de datos" />
+        <div class="topic-info">Estas imágenes destacan las reglas clave para crear bases de datos y tablas: definir correctamente tipos de datos, llaves y restricciones. Sirven como guía visual para estructurar una base de datos segura y eficiente.</div>
+        <pre class="sql">CREATE DATABASE tienda;
+USE tienda;
+CREATE TABLE producto (
+  id INT PRIMARY KEY,
+  sku VARCHAR(50) UNIQUE,
+  nombre VARCHAR(200) NOT NULL,
+  precio DECIMAL(8,2) CHECK (precio >= 0)
+);
+
+-- Ejemplo adicional: restricción NOT NULL y bloqueo de precio negativo
+CREATE TABLE proveedores (
+  id INT PRIMARY KEY,
+  nombre VARCHAR(120) NOT NULL,
+  telefono VARCHAR(20) UNIQUE,
+  monto_credito DECIMAL(10,2) CHECK (monto_credito >= 0)
+);
+</pre>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>PRIMARY KEY identifica de forma única cada fila.</li>
+            <li>UNIQUE evita duplicar códigos de producto o correos.</li>
+            <li>NOT NULL garantiza que un campo siempre tenga valor.</li>
+            <li>CHECK valida condiciones como precios mayores o iguales a cero.</li>
+            <li>Declarar constraints ayuda a mantener datos coherentes.</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Escribe la sentencia para crear una tabla `categorias` con `id` e `nombre` único.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">CREATE TABLE categorias (id INT PRIMARY KEY, nombre VARCHAR(100) UNIQUE NOT NULL);</div>
+        </div>
+      </section>
+
+      <section id="t4" class="topic">
+        <h2>4. Modificar y eliminar Tablas</h2>
+        <p>ALTER TABLE para cambiar estructura; DROP TABLE para eliminar.</p>
+        <div class="topic-info">Puedes ajustar una tabla existente sin perder datos usando ALTER TABLE. DROP TABLE borra la tabla completa, así que úsalo con precaución y preferiblemente con respaldo.</div>
+        <img class="topic-image" src="img/dilan.png" alt="Modificar y eliminar tablas" />
+        <img class="topic-image" src="img/dilan1.png" alt="Modificar y eliminar tablas" />
+        <div class="topic-info">Las ilustraciones muestran los pasos para alterar una tabla y para eliminarla con cuidado. Refuerzan visualmente que alterar es modificar la estructura sin perder datos, mientras que eliminar borra la tabla completa.</div>
+        <pre class="sql">-- Añadir columna
+ALTER TABLE usuarios ADD COLUMN fecha_registro DATE;
+-- Renombrar columna
+ALTER TABLE clientes RENAME COLUMN nombre TO nombre_completo;
+-- Eliminar tabla
+DROP TABLE temporal;
+</pre>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>ALTER TABLE usuarios ADD COLUMN telefono VARCHAR(20);</li>
+            <li>ALTER TABLE clientes RENAME COLUMN nombre TO nombre_completo;</li>
+            <li>ALTER TABLE productos DROP COLUMN descripcion;</li>
+            <li>ALTER TABLE pedidos MODIFY COLUMN total DECIMAL(12,2);</li>
+            <li>DROP TABLE temporal; elimina la tabla completa y sus datos.</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> ¿Cómo renombrarías la columna `nombre` a `nombre_completo` en `clientes`?
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">ALTER TABLE clientes RENAME COLUMN nombre TO nombre_completo; (varía según SGBD)</div>
+        </div>
+      </section>
+
+      <section id="t5" class="topic">
+        <h2>5. Foreign Key / Normalización</h2>
+        <p>Las claves foráneas mantienen relaciones y la normalización evita redundancias.</p>
+        <div class="topic-info">Una foreign key une tablas para que los datos sean consistentes. Normalizar divide la información en tablas relacionadas para evitar duplicados y errores al actualizar.</div>
+        <img class="topic-image" src="img/foreign.jpeg" alt="Foreign Key y Normalización" />
+        <div class="topic-info">La imagen ilustra cómo una clave foránea conecta tablas y evita inconsistencias. Es un apoyo visual para entender que la normalización separa datos relacionados en tablas vinculadas.</div>
+        <pre class="sql">CREATE TABLE ordenes (
+  id INT PRIMARY KEY,
+  cliente_id INT,
+  fecha DATE,
+  total DECIMAL(10,2),
+  FOREIGN KEY (cliente_id) REFERENCES clientes(id)
+);
+
+-- Ejemplo adicional: clave foránea con eliminación en cascada
+CREATE TABLE orden_detalle (
+  id INT PRIMARY KEY,
+  orden_id INT,
+  producto_id INT,
+  cantidad INT,
+  FOREIGN KEY (orden_id) REFERENCES ordenes(id) ON DELETE CASCADE
+);
+</pre>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>Una tabla detalle usa foreign keys para vincular productos y pedidos.</li>
+            <li>Normalizar evita guardar el mismo cliente varias veces.</li>
+            <li>Una relación 1:N enlaza clientes con múltiples órdenes.</li>
+            <li>Separar direcciones en otra tabla reduce redundancias.</li>
+            <li>Actualizar un precio en una sola tabla evita inconsistencias.</li>
+        </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> ¿Qué problema resuelve la normalización respecto a las actualizaciones de datos?
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">Evita anomalías de actualización y elimina la duplicación de información.</div>
+        </div>
+      </section>
+
+      <section id="t6" class="topic">
+        <h2>6. Insertar Registros</h2>
+        <p>INSERT INTO agrega nuevos registros a una tabla. Si la columna `id` es AUTO_INCREMENT, el valor se genera automáticamente.</p>
+        <div class="topic-info">INSERT INTO es la forma básica de agregar datos. Primero se crea la base de datos y la tabla, luego se insertan registros y se comprueba con SELECT.</div>
+        <img class="topic-image" src="img/insertar.jpeg" alt="Insertar registros" />
+        <div class="topic-info">La imagen refleja el proceso de insertar nuevos registros después de crear la estructura de la tabla. Refuerza la idea de que primero se define la tabla y luego se agregan los datos con INSERT INTO.</div>
+        <pre class="sql">-- Crear base de datos y tabla
+CREATE DATABASE ejemplo_db;
+USE ejemplo_db;
+
+CREATE TABLE alumnos (
+  id_alumno VARCHAR(10),
+  nombre VARCHAR(50),
+  apellido VARCHAR(50),
+  edad INT,
+  carrera VARCHAR(50)
+);
+
+-- Insertar registros
+INSERT INTO alumnos VALUES ('003','Juan','Perez',18,'Programacion');
+INSERT INTO alumnos VALUES ('004','Ana','Martinez',18,'Diseno Grafico');
+INSERT INTO alumnos VALUES ('005','Luis','Ramirez',20,'Programacion');
+INSERT INTO alumnos VALUES ('006','Sofia','Torres',19,'Contabilidad');
+
+-- Ver registros
+SELECT * FROM alumnos;
+</pre>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>INSERT INTO alumnos VALUES ('007','Luis','Gomez',21,'Redes');</li>
+            <li>INSERT INTO alumnos (id_alumno,nombre,apellido) VALUES ('008','Sofia','Lopez');</li>
+            <li>INSERT INTO alumnos (id_alumno,nombre,apellido,edad) VALUES ('009','Marta','Diaz',20);</li>
+            <li>INSERT INTO alumnos (id_alumno,nombre,apellido,carrera) VALUES ('010','Diego','Vargas','Diseño');</li>
+            <li>INSERT INTO alumnos VALUES ('011','Carla','Ruiz',22,'Contabilidad');</li>
+          </ul>
+        </div>
+        <div class="topic-info">
+          <strong>¿Qué significa cada tipo de dato?</strong>
+          <ul>
+            <li><strong>VARCHAR(10)</strong>: almacena texto de hasta 10 caracteres.</li>
+            <li><strong>VARCHAR(50)</strong>: almacena texto de hasta 50 caracteres.</li>
+            <li><strong>INT</strong>: almacena números enteros.</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Inserta un nuevo alumno con `id_alumno`, nombre, apellido, edad y carrera.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">INSERT INTO alumnos VALUES ('007','Luis','Gomez',21,'Redes');</div>
+        </div>
+      </section>
+
+      <section id="t7" class="topic">
+        <h2>7. Eliminar Registros</h2>
+        <p>DELETE es la sentencia que se usa para borrar uno o más registros de una tabla según una condición.</p>
+        <div class="topic-info">Antes de eliminar registros, verifica qué filas se borrarán con SELECT. Usa WHERE siempre que no quieras eliminar todas las filas por accidente.</div>
+        <img class="topic-image" src="img/eliminar.jpeg" alt="Eliminar registros" />
+        <div class="topic-info">La imagen enfatiza la importancia de usar condiciones precisas al eliminar registros. Sirve como recordatorio visual de que DELETE sin WHERE puede borrar toda la tabla.</div>
+        <pre class="sql">-- Eliminar un registro por ID
+DELETE FROM usuarios
+WHERE id = 4;
+
+-- Eliminar por nombre
+DELETE FROM usuarios
+WHERE nombre = 'Carlos';
+
+-- Eliminar varios registros según una condición
+DELETE FROM usuarios
+WHERE edad >= 22;
+
+-- Eliminar con varias condiciones
+DELETE FROM usuarios
+WHERE ciudad = 'Puebla' AND edad = 30;
+
+-- Eliminar con IN
+DELETE FROM usuarios
+WHERE id IN (2, 5, 8);
+</pre>
+        <div class="topic-info">
+          <ul>
+            <li><strong>DELETE FROM</strong>: elimina registros.</li>
+            <li><strong>WHERE</strong>: evita borrar todos los registros por accidente.</li>
+            <li><strong>SELECT antes de DELETE</strong>: verifica qué datos se eliminarán.</li>
+            <li><strong>DELETE FROM usuarios;</strong> borra todos los registros, pero la tabla sigue existiendo.</li>
+          </ul>
+        </div>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>DELETE FROM usuarios WHERE id = 4;</li>
+            <li>DELETE FROM usuarios WHERE nombre = 'Carlos';</li>
+            <li>DELETE FROM usuarios WHERE edad &gt;= 22;</li>
+            <li>DELETE FROM usuarios WHERE ciudad = 'Puebla' AND edad = 30;</li>
+            <li>DELETE FROM usuarios WHERE id IN (2, 5, 8);</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Elimina los usuarios cuyo `id` sea 2, 5 u 8.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">DELETE FROM usuarios WHERE id IN (2, 5, 8);</div>
+        </div>
+      </section>
+
+      <section id="t8" class="topic">
+        <h2>8. Actualizar Registros</h2>
+        <p>UPDATE modifica valores de registros existentes; SET especifica las columnas y nuevos valores, y WHERE limita el alcance.</p>
+        <div class="topic-info">La sintaxis básica es UPDATE [tabla] SET [columna] = 'valor' WHERE [condición]. Usa siempre WHERE, idealmente con la clave primaria (`id`) para actualizar un único registro.</div>
+        <img class="topic-image" src="img/actualizar.jpeg" alt="Actualizar registros" />
+        <div class="topic-info">La ilustración subraya cómo UPDATE cambia valores de registros existentes. Sirve para recordar que SET define las columnas a modificar y WHERE limita el alcance de la actualización.</div>
+        <pre class="sql">-- Actualizar un registro
+UPDATE usuarios
+SET edad = 26
+WHERE id = 1;
+
+-- Actualizar varios campos
+UPDATE usuarios
+SET email = 'ana_nuevo@mail.com', edad = 27
+WHERE id = 1;
+
+-- Actualizar registros según condición
+UPDATE usuarios
+SET ciudad = 'Monterrey'
+WHERE id > 1;
+
+-- Ejemplo de formato de datos
+UPDATE usuarios
+SET nombre = 'Juan', fecha_registro = '2023-10-27'
+WHERE id = 5;
+</pre>
+        <div class="topic-info">
+          <strong>Reglas de formato y tipos de datos</strong>
+          <table>
+            <thead>
+              <tr>
+                <th>Tipo de Dato</th>
+                <th>Usa comillas simples?</th>
+                <th>Ejemplo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>VARCHAR / TEXT</td>
+                <td>Sí</td>
+                <td>SET nombre = 'Mario'</td>
+              </tr>
+              <tr>
+                <td>DATE / DATETIME</td>
+                <td>Sí</td>
+                <td>SET fecha = '2023-10-27'</td>
+              </tr>
+              <tr>
+                <td>INT / DECIMAL</td>
+                <td>No</td>
+                <td>SET id = 5</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="topic-info">
+          <ul>
+            <li><strong>UPDATE [tabla]</strong>: indica la tabla a modificar.</li>
+            <li><strong>SET</strong>: define las columnas y sus nuevos valores.</li>
+            <li><strong>WHERE</strong>: evita cambios masivos no deseados.</li>
+            <li>Sin WHERE, se actualizan todos los registros de la tabla.</li>
+          </ul>
+        </div>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>UPDATE usuarios SET edad = 26 WHERE id = 1;</li>
+            <li>UPDATE usuarios SET email = 'ana_nuevo@mail.com', edad = 27 WHERE id = 1;</li>
+            <li>UPDATE usuarios SET ciudad = 'Monterrey' WHERE id &gt; 1;</li>
+            <li>UPDATE usuarios SET nombre = 'Juan' WHERE id = 5;</li>
+            <li>UPDATE usuarios SET fecha_registro = '2023-10-27' WHERE id = 5;</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Actualiza el correo y la edad del usuario con id = 1.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">UPDATE usuarios SET email = 'ana_nuevo@mail.com', edad = 27 WHERE id = 1;</div>
+        </div>
+      </section>
+
+      <section id="t9" class="topic">
+        <h2>9. Seleccionar Registros</h2>
+        <p>El comando SELECT se utiliza para consultar y mostrar información almacenada en una tabla.</p>
+        <div class="topic-info">SELECT es la base de todas las consultas. Permite ver todos los registros, elegir columnas específicas, filtrar con WHERE, ordenar resultados y obtener totales o valores únicos.</div>
+        <img class="topic-image" src="img/select.jpeg" alt="Seleccionar registros" />
+        <div class="topic-info">La imagen muestra la selección de datos con SELECT, reforzando que esta sentencia es la base para consultar la información guardada en las tablas. Es una ayuda visual para comprender consultas simples y filtradas.</div>
+        <pre class="sql">-- 1. Seleccionar todos los registros
+SELECT *
+FROM Estudiantes;
+
+-- 2. Seleccionar columnas específicas
+SELECT nombre, edad
+FROM Estudiantes;
+
+-- 3. Filtrar registros con WHERE
+SELECT *
+FROM Estudiantes
+WHERE carrera = 'Programación';
+
+-- 4. Ordenar registros
+SELECT *
+FROM Estudiantes
+ORDER BY nombre;
+
+-- 5. Contar registros
+SELECT COUNT(*)
+FROM Estudiantes;
+
+-- 6. Buscar por ID
+SELECT *
+FROM Estudiantes
+WHERE id_estudiante = '001';
+
+-- 7. Mostrar registros únicos
+SELECT DISTINCT carrera
+FROM Estudiantes;
+</pre>
+        <div class="topic-info">
+          <strong>Ventajas de SELECT</strong>
+          <ul>
+            <li>Consultar información rápidamente.</li>
+            <li>Filtrar datos específicos con WHERE.</li>
+            <li>Ordenar resultados con ORDER BY.</li>
+            <li>Contar registros con COUNT.</li>
+            <li>Analizar información almacenada.</li>
+          </ul>
+        </div>
+        <div class="topic-info">
+          <strong>Ejemplo final</strong>
+          <pre class="sql">SELECT nombre, carrera
+FROM Estudiantes
+WHERE edad >= 18
+ORDER BY nombre;</pre>
+          <p>Obtiene el nombre y la carrera de los estudiantes mayores o iguales a 18 años, ordenados alfabéticamente por nombre.</p>
+          <p>Nota: los nombres de tablas y columnas pueden variar según la base de datos.</p>
+        </div>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>SELECT * FROM Estudiantes;</li>
+            <li>SELECT nombre, edad FROM Estudiantes;</li>
+            <li>SELECT * FROM Estudiantes WHERE carrera = 'Programación';</li>
+            <li>SELECT DISTINCT carrera FROM Estudiantes;</li>
+            <li>SELECT COUNT(*) FROM Estudiantes WHERE edad &gt;= 18;</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Escribe una consulta que devuelva estudiantes de la carrera 'Redes' ordenados por apellido.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">SELECT * FROM Estudiantes WHERE carrera = 'Redes' ORDER BY apellido;</div>
+        </div>
+      </section>
+
+      <section id="t10" class="topic">
+        <h2>10. Operadores lógicos y de comparación</h2>
+        <p>Uso de AND, OR, NOT, LIKE, IS NULL, BETWEEN, IN para filtrar resultados.</p>
+        <div class="topic-info">Los operadores lógicos permiten combinar varias condiciones. LIKE busca patrones en texto, BETWEEN define rangos y IN compara con una lista de valores.</div>
+        <img class="topic-image" src="img/operadores.png" alt="Operadores lógicos" />
+        <div class="topic-info">El gráfico complementa la sección mostrando cómo combinar condiciones con AND, OR, NOT y otros operadores. Refuerza la idea de que las consultas pueden ser más precisas y potentes mediante filtros lógicos.</div>
+        <pre class="sql">SELECT * FROM productos WHERE precio BETWEEN 10 AND 50 AND nombre LIKE '%Pro%';
+SELECT * FROM usuarios WHERE id IN (1,2,3) AND email IS NOT NULL;
+
+-- Uso de NOT e IS NULL
+SELECT * FROM clientes WHERE estado <> 'inactivo' AND email IS NOT NULL;
+</pre>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>SELECT * FROM productos WHERE precio BETWEEN 10 AND 50;</li>
+            <li>SELECT * FROM usuarios WHERE id IN (1,2,3);</li>
+            <li>SELECT * FROM clientes WHERE email IS NOT NULL;</li>
+            <li>SELECT * FROM clientes WHERE estado <> 'inactivo';</li>
+            <li>SELECT * FROM productos WHERE nombre LIKE '%Pro%';</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Filtra órdenes del cliente 5 con total mayor a 100 o con estado 'urgente'.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">SELECT * FROM ordenes WHERE cliente_id=5 AND (total &gt; 100 OR estado='urgente');</div>
+        </div>
+      </section>
+
+      <section id="t11" class="topic">
+        <h2>11. Order By / Limit / Top</h2>
+        <p>Ordenar resultados y limitar filas devueltas.</p>
+        <div class="topic-info">ORDER BY organiza los resultados por una o más columnas. LIMIT o TOP reducen la cantidad de filas devueltas, lo cual es útil para paginación o vistas rápidas.</div>
+        <img class="topic-image" src="img/ordenar.png" alt="Order By explicación" />
+        <img class="topic-image" src="img/ordenar1.png" alt="Order By ejemplos" />
+        <div class="topic-info">Estas imágenes muestran cómo ordenar resultados y limitar filas. Refuerzan visualmente la diferencia entre ORDER BY y LIMIT/TOP para extraer subconjuntos de datos ordenados.</div>
+        <pre class="sql">SELECT * FROM productos ORDER BY precio DESC LIMIT 10; -- MySQL/Postgres
+-- SQL Server: SELECT TOP 10 * FROM productos ORDER BY precio DESC;
+
+-- Paginación simple
+SELECT * FROM productos ORDER BY nombre ASC LIMIT 10 OFFSET 20;
+</pre>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>SELECT * FROM productos ORDER BY precio DESC LIMIT 10;</li>
+            <li>SELECT TOP 5 * FROM ventas ORDER BY fecha DESC;</li>
+            <li>SELECT * FROM empleados ORDER BY apellido ASC LIMIT 20;</li>
+            <li>SELECT * FROM clientes ORDER BY nombre ASC LIMIT 15 OFFSET 5;</li>
+            <li>SELECT * FROM pedidos ORDER BY total DESC LIMIT 3;</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Devuelve los 5 clientes con más pedidos.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">SELECT c.id, c.nombre, COUNT(o.id) AS num_pedidos FROM clientes c JOIN ordenes o ON c.id=o.cliente_id GROUP BY c.id,c.nombre ORDER BY num_pedidos DESC LIMIT 5;</div>
+        </div>
+      </section>
+
+      <section id="t12" class="topic">
+        <h2>12. Funciones de texto</h2>
+        <p>Funciones como CONCAT, SUBSTRING, UPPER, LOWER, TRIM, LENGTH.</p>
+        <div class="topic-info">Las funciones de texto permiten transformar y evaluar cadenas. Útiles para normalizar datos, extraer partes de un email o construir informes personalizados.</div>
+        <pre class="sql">SELECT CONCAT(nombre,' ',apellido) AS nombre_completo FROM usuarios;
+SELECT UPPER(email) FROM usuarios;
+
+-- Más ejemplos de texto
+SELECT TRIM(nombre) AS limpio, LENGTH(email) AS largo_email FROM usuarios;
+SELECT SUBSTRING(nombre,1,10) AS prefijo FROM usuarios;
+</pre>
+        <div class="topic-info">
+          <strong>PDF descargable</strong>
+          <p>Descarga el resumen de funciones de texto:</p>
+          <a href="pdf/Funciones de texto.pdf" target="_blank" rel="noopener" style="color:#38bdf8;">Abrir PDF de Funciones de texto</a>
+        </div>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>SELECT CONCAT(nombre,' ',apellido) AS nombre_completo FROM usuarios;</li>
+            <li>SELECT UPPER(email) FROM usuarios;</li>
+            <li>SELECT LOWER(nombre) FROM empleados;</li>
+            <li>SELECT TRIM(nombre) AS limpio FROM clientes;</li>
+            <li>SELECT SUBSTRING(nombre,1,10) AS prefijo FROM usuarios;</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Extrae el dominio del email (texto después de @).
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">En Postgres: SELECT split_part(email,'@',2) AS dominio FROM usuarios; En MySQL: SUBSTRING_INDEX(email,'@',-1)</div>
+        </div>
+      </section>
+
+      <section id="t13" class="topic">
+        <h2>13. Funciones numéricas</h2>
+        <p>SUM, AVG, COUNT, MIN, MAX, ROUND, FLOOR, CEIL.</p>
+        <div class="topic-info">Las funciones numéricas permiten calcular totales, promedios y estadísticas. Son clave para reportes financieros y análisis de datos en SQL.</div>
+        <img class="topic-image" src="img/numeros.png" alt="Funciones numéricas" />
+        <div class="topic-info">La imagen apoya la sección de funciones numéricas mostrando ejemplos de cálculos y agregaciones. Sirve para recordar que SQL puede resumir grandes cantidades de datos con SUM, AVG, COUNT, MIN y MAX.</div>
+        <pre class="sql">SELECT AVG(total) AS promedio FROM ordenes;
+SELECT COUNT(*) FROM usuarios WHERE fecha_registro &gt; '2024-01-01';
+
+-- Ejemplo adicional: sumas, mínimos y máximos
+SELECT SUM(total) AS total_ventas, MIN(total) AS venta_minima, MAX(total) AS venta_maxima FROM ordenes;
+SELECT ROUND(AVG(total), 2) AS promedio_redondeado FROM ordenes;
+</pre>
+        <div class="topic-info">
+          <strong>Funciones numéricas clave</strong>
+          <table>
+            <thead>
+              <tr>
+                <th>Función</th>
+                <th>Concepto</th>
+                <th>Ejemplo SQL</th>
+                <th>Qué obtiene</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>SUM</td>
+                <td>Suma todos los valores de una columna.</td>
+                <td><code>SELECT SUM(precio) FROM productos;</code></td>
+                <td>Suma el costo de todos los productos en inventario.</td>
+              </tr>
+              <tr>
+                <td>AVG</td>
+                <td>Calcula el promedio aritmético de los valores.</td>
+                <td><code>SELECT AVG(precio) FROM productos;</code></td>
+                <td>Obtiene el precio promedio de los productos.</td>
+              </tr>
+              <tr>
+                <td>COUNT</td>
+                <td>Cuenta la cantidad de registros o filas.</td>
+                <td><code>SELECT COUNT(*) FROM productos;</code></td>
+                <td>Indica cuántos productos hay registrados.</td>
+              </tr>
+              <tr>
+                <td>MAX</td>
+                <td>Encuentra el valor más alto en la columna.</td>
+                <td><code>SELECT MAX(precio) FROM productos;</code></td>
+                <td>Muestra el precio del producto más caro.</td>
+              </tr>
+              <tr>
+                <td>MIN</td>
+                <td>Encuentra el valor más bajo en la columna.</td>
+                <td><code>SELECT MIN(precio) FROM productos;</code></td>
+                <td>Muestra el precio del producto más barato.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>SELECT SUM(total) AS total_ventas FROM ordenes;</li>
+            <li>SELECT AVG(total) AS promedio FROM ordenes;</li>
+            <li>SELECT COUNT(*) FROM usuarios WHERE fecha_registro &gt; '2024-01-01';</li>
+            <li>SELECT MAX(precio) FROM productos;</li>
+            <li>SELECT MIN(precio) FROM productos;</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Calcula la suma total de ventas por mes.
+          <div class="answer">SELECT DATE_TRUNC('month', fecha) AS mes, SUM(total) FROM ordenes GROUP BY mes ORDER BY mes;</div>
+        </div>
+      </section>
+
+      <section id="t14" class="topic">
+        <h2>14. Manejo de Fechas y horas</h2>
+        <p>Funciones: NOW(), DATE_ADD/DATE_SUB, DATE_TRUNC, EXTRACT.</p>
+        <div class="topic-info">Las fechas y horas se tratan con funciones especiales. Sirven para filtrar intervalos, agrupar por periodos y hacer cálculos temporales precisos.</div>
+        <img class="topic-image" src="img/fecha.png" alt="Funciones de fecha" />
+        <img class="topic-image" src="img/fecha1.png" alt="Ejemplos de fechas" />
+        <div class="topic-info">Las imágenes refuerzan el uso de funciones de fecha para filtrar y agrupar datos temporales. Ayudan a visualizar cómo trabajar con intervalos, extracciones de año y agregaciones por día.</div>
+        <pre class="sql">-- Últimos 7 días
+SELECT * FROM ordenes WHERE fecha &gt; NOW() - INTERVAL '7 days';
+-- Extraer año
+SELECT EXTRACT(YEAR FROM fecha) AS anio FROM ordenes;
+
+-- Ejemplo adicional: añadir un mes y agrupar por día
+SELECT DATE_ADD(fecha, INTERVAL 1 MONTH) AS fecha_mas_un_mes FROM ordenes;
+SELECT DATE_TRUNC('day', fecha) AS dia, SUM(total) FROM ordenes GROUP BY dia ORDER BY dia;
+</pre>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>SELECT * FROM ordenes WHERE fecha &gt; NOW() - INTERVAL '7 days';</li>
+            <li>SELECT EXTRACT(YEAR FROM fecha) AS anio FROM ordenes;</li>
+            <li>SELECT DATE_ADD(fecha, INTERVAL 1 MONTH) FROM ordenes;</li>
+            <li>SELECT DATE_TRUNC('day', fecha) AS dia FROM ordenes;</li>
+            <li>SELECT DATE(fecha) AS dia FROM ordenes WHERE fecha &gt; '2024-01-01';</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Escribe una consulta que muestre ventas diarias de la última semana.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">SELECT DATE(fecha) AS dia, SUM(total) FROM ordenes WHERE fecha &gt; NOW() - INTERVAL '7 days' GROUP BY dia ORDER BY dia;</div>
+        </div>
+      </section>
+
+      <footer class="footer">Fin de la guía. Si quieres, puedo convertirla en una versión aún más sencilla sin ejercicios.</footer>
+    </article>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    const sectionLinks = document.querySelectorAll('#side a');
+    const sections = document.querySelectorAll('.topic');
+
+    const showTopic = id => {
+      sections.forEach(section => section.classList.remove('active'));
+      const target = document.getElementById(id);
+      if (target) {
+        target.classList.add('active');
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+    };
+
+    sectionLinks.forEach(link => {
+      link.addEventListener('click', event => {
+        event.preventDefault();
+        const targetId = link.getAttribute('href').slice(1);
+        showTopic(targetId);
+      });
+    });
+
+    document.getElementById('placeholder').classList.add('active');
+
+    const exerciseBank = {
+      t1: [
+        {question: '¿Qué ventajas aporta un SGBD frente a guardar datos en archivos separados?', answer: 'Permite relaciones entre tablas, consultas estructuradas con SQL, integridad de datos, seguridad y menor redundancia.'},
+        {question: '¿Qué es una base de datos relacional?', answer: 'Un sistema que almacena datos en tablas relacionadas mediante filas y columnas para facilitar consultas y gestión.'},
+        {question: '¿Por qué se usan tablas relacionadas en un modelo relacional?', answer: 'Para mantener la información organizada, evitar redundancia y permitir consultas entre tablas usando claves.'}
+      ],
+      t2: [
+        {question: 'Dibuja mentalmente el diagrama entidad-relación para clientes y pedidos e indica cardinalidades.', answer: 'Un cliente puede tener 0..N pedidos; cada pedido pertenece a exactamente 1 cliente (1..N).'},
+        {question: '¿Qué mejora aporta normalizar una base de datos?', answer: 'Reduce redundancias, evita anomalías y facilita el mantenimiento de los datos.'},
+        {question: '¿Qué representa una relación 1 a N en un diagrama ER?', answer: 'Un registro de la primera tabla puede estar relacionado con muchos registros de la segunda, pero no al revés.'}
+      ],
+      t3: [
+        {question: 'Escribe la sentencia para crear una tabla categorias con id e nombre único.', answer: 'CREATE TABLE categorias (id INT PRIMARY KEY, nombre VARCHAR(100) UNIQUE NOT NULL);'},
+        {question: '¿Para qué sirve la restricción UNIQUE?', answer: 'Evita que dos filas tengan el mismo valor en la columna marcada como única.'},
+        {question: '¿Qué hace CHECK en una tabla?', answer: 'Verifica que los valores cumplan una condición lógica al insertar o actualizar datos.'}
+      ],
+      t4: [
+        {question: '¿Cómo renombrarías la columna nombre a nombre_completo en clientes?', answer: 'ALTER TABLE clientes RENAME COLUMN nombre TO nombre_completo; (varía según SGBD)'},
+        {question: '¿Qué comando se usa para agregar una columna a una tabla?', answer: 'ALTER TABLE nombre_tabla ADD COLUMN nombre_columna tipo;'},
+        {question: '¿Qué advierte antes de usar DROP TABLE?', answer: 'Que elimina la tabla completa y sus datos, por lo que conviene hacer respaldo si se necesita.'}
+      ],
+      t5: [
+        {question: '¿Qué problema resuelve la normalización respecto a las actualizaciones de datos?', answer: 'Evita anomalías de actualización y elimina la duplicación de información.'},
+        {question: '¿Qué hace una clave foránea?', answer: 'Relaciona registros de una tabla con otra para mantener consistencia entre datos.'},
+        {question: '¿Por qué usar ON DELETE CASCADE?', answer: 'Para borrar automáticamente los registros relacionados cuando se elimina el registro padre.'}
+      ],
+      t6: [
+        {question: 'Inserta un nuevo alumno con id_alumno, nombre, apellido, edad y carrera.', answer: 'INSERT INTO alumnos VALUES (\'007\',\'Luis\',\'Gomez\',21,\'Redes\');'},
+        {question: '¿Qué sentencia agrega datos a una tabla?', answer: 'INSERT INTO nombre_tabla VALUES (...);'},
+        {question: '¿Cómo verificarías los registros después de un INSERT?', answer: 'Con SELECT * FROM nombre_tabla;'}
+      ],
+      t7: [
+        {question: 'Elimina los usuarios cuyo id sea 2, 5 u 8.', answer: 'DELETE FROM usuarios WHERE id IN (2, 5, 8);'},
+        {question: '¿Qué pasa si ejecutas DELETE FROM usuarios; sin WHERE?', answer: 'Borra todas las filas de la tabla, pero la tabla sigue existiendo.'},
+        {question: '¿Por qué conviene usar SELECT antes de DELETE?', answer: 'Para verificar qué filas se eliminarán y evitar borrar datos por error.'}
+      ],
+      t8: [
+        {question: 'Actualiza el correo y la edad del usuario con id = 1.', answer: 'UPDATE usuarios SET email = \'ana_nuevo@mail.com\', edad = 27 WHERE id = 1;'},
+        {question: '¿Qué hace la cláusula SET en UPDATE?', answer: 'Define las columnas y nuevos valores que se van a actualizar.'},
+        {question: '¿Por qué siempre debes usar WHERE en un UPDATE?', answer: 'Para limitar los registros afectados y evitar cambios masivos accidentales.'}
+      ],
+      t9: [
+        {question: 'Escribe una consulta que devuelva estudiantes de la carrera Redes ordenados por apellido.', answer: 'SELECT * FROM Estudiantes WHERE carrera = \'Redes\' ORDER BY apellido;'},
+        {question: '¿Qué hace SELECT DISTINCT?', answer: 'Devuelve valores únicos sin repeticiones en la columna seleccionada.'},
+        {question: '¿Qué cláusula usa para ordenar resultados?', answer: 'ORDER BY nombre;'}
+      ],
+      t10: [
+        {question: 'Filtra órdenes del cliente 5 con total mayor a 100 o con estado urgente.', answer: 'SELECT * FROM ordenes WHERE cliente_id=5 AND (total > 100 OR estado=\'urgente\');'},
+        {question: '¿Qué operador SQL se usa para buscar patrones?', answer: 'LIKE se usa para buscar patrones en texto.'},
+        {question: '¿Qué hace el operador IN?', answer: 'Compara un valor contra una lista de valores posibles.'}
+      ],
+      t11: [
+        {question: 'Devuelve los 5 clientes con más pedidos.', answer: 'SELECT c.id, c.nombre, COUNT(o.id) AS num_pedidos FROM clientes c JOIN ordenes o ON c.id=o.cliente_id GROUP BY c.id,c.nombre ORDER BY num_pedidos DESC LIMIT 5;'},
+        {question: '¿Qué hace LIMIT 10?', answer: 'Limita el número de filas devueltas a 10.'},
+        {question: '¿Cómo ordenas resultados de mayor a menor?', answer: 'Usando ORDER BY columna DESC.'}
+      ],
+      t12: [
+        {question: 'Extrae el dominio del email.', answer: 'En Postgres: SELECT split_part(email,\'@\',2) AS dominio FROM usuarios; En MySQL: SUBSTRING_INDEX(email,\'@\',-1);'},
+        {question: '¿Para qué sirve CONCAT?', answer: 'Para unir varias cadenas de texto en una sola.'},
+        {question: '¿Qué hace UPPER?', answer: 'Convierte el texto a mayúsculas.'}
+      ],
+      t13: [
+        {question: 'Calcula la suma total de ventas por mes.', answer: 'SELECT DATE_TRUNC(\'month\', fecha) AS mes, SUM(total) FROM ordenes GROUP BY mes ORDER BY mes;'},
+        {question: '¿Qué retorna AVG?', answer: 'El promedio de los valores de una columna numérica.'},
+        {question: '¿Qué hace SUM?', answer: 'Suma todos los valores de la columna indicada.'}
+      ],
+      t14: [
+        {question: 'Escribe una consulta que muestre ventas diarias de la última semana.', answer: 'SELECT DATE(fecha) AS dia, SUM(total) FROM ordenes WHERE fecha > NOW() - INTERVAL \'7 days\' GROUP BY dia ORDER BY dia;'},
+        {question: '¿Qué función extrae el año de una fecha?', answer: 'EXTRACT(YEAR FROM fecha) AS anio.'},
+        {question: '¿Cómo filtras datos de los últimos 7 días?', answer: 'WHERE fecha > NOW() - INTERVAL \'7 days\''}
+      ]
+    };
+    const lastQuestionIndex = {};
+
+    const getRandomExercise = topicKey => {
+      const exercises = exerciseBank[topicKey];
+      if (!Array.isArray(exercises) || exercises.length === 0) {
+        return null;
+      }
+      let index = Math.floor(Math.random() * exercises.length);
+      if (typeof lastQuestionIndex[topicKey] === 'number' && exercises.length > 1) {
+        while (index === lastQuestionIndex[topicKey]) {
+          index = Math.floor(Math.random() * exercises.length);
+        }
+      }
+      lastQuestionIndex[topicKey] = index;
+      return exercises[index];
+    };
+
+    const normalizeAnswer = value => value?.toString().trim().toLowerCase().replace(/\s+/g, ' ').replace(/[¡!¿?]/g, '').replace(/[‘’“”]/g, "'") || '';
+
+    const isAnswerCorrect = (submitted, expected) => {
+      if (!submitted || !expected) return false;
+      const given = normalizeAnswer(submitted);
+      const correct = normalizeAnswer(expected);
+      if (given === correct) return true;
+      if (given.includes(correct) || correct.includes(given)) return true;
+      if (/\b(select|insert|update|delete|create|alter|drop|foreign key|join|group by|order by)\b/.test(correct)) {
+        const tokens = correct.replace(/[();,]/g, ' ').split(' ').filter(Boolean);
+        return tokens.every(token => given.includes(token));
+      }
+      return false;
+    };
+
+    const escapeHtml = text => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    const showExercisePopup = (topic, text, expected) => {
+      if (typeof Swal !== 'undefined') {
+        return Swal.fire({
+          title: topic || 'Ejercicio',
+          html: `<p style="color:#cbd5e1;margin-bottom:1rem;"><strong>Pregunta:</strong> ${escapeHtml(text)}</p>`,
+          icon: 'question',
+          input: 'textarea',
+          inputPlaceholder: 'Escribe tu respuesta aquí...',
+          inputAttributes: {
+            'aria-label': 'Respuesta al ejercicio',
+            style: 'color:#020617;'
+          },
+          showCancelButton: true,
+          confirmButtonText: 'Enviar respuesta',
+          cancelButtonText: 'Cerrar',
+          background: '#0f172a',
+          color: '#e2e8f0',
+          confirmButtonColor: '#38bdf8',
+          reverseButtons: true
+        }).then(result => {
+          if (!result.isConfirmed) return;
+          const userAnswer = result.value || '';
+          const isCorrect = isAnswerCorrect(userAnswer, expected);
+          const title = isCorrect ? 'Correcto' : 'Incorrecto';
+          const icon = isCorrect ? 'success' : 'error';
+          const expectedHtml = `<pre style="text-align:left;white-space:pre-wrap;word-break:break-word;padding:0.75rem;border-radius:12px;background:#111827;color:#e2e8f0;border:1px solid rgba(56,189,248,.2);">${escapeHtml(expected)}</pre>`;
+          Swal.fire({
+            title,
+            html: `<p style="color:#cbd5e1;margin-bottom:1rem;">${isCorrect ? '¡Muy bien! Tu respuesta coincide con lo esperado.' : 'No es correcto. Revisa la respuesta sugerida:'}</p>${expectedHtml}`,
+            icon,
+            confirmButtonText: 'Cerrar',
+            background: '#0f172a',
+            color: '#e2e8f0',
+            confirmButtonColor: '#38bdf8'
+          });
+        });
+      }
+
+      const answer = prompt(`${topic ? topic + ' - ' : ''}${text}\n\nEscribe tu respuesta:`);
+      if (!answer) return;
+      const isCorrect = isAnswerCorrect(answer, expected);
+      alert(isCorrect ? `Correcto\nRespuesta esperada:\n${expected}` : `Incorrecto\nRespuesta esperada:\n${expected}`);
+    };
+
+    document.querySelectorAll('.exercise').forEach(exercise => {
+      const question = exercise.querySelector('strong');
+      const expectedElement = exercise.querySelector('.answer');
+      const expected = expectedElement ? expectedElement.textContent.trim() : '';
+      if (!question || !expected) return;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'view-exercise';
+      button.textContent = 'Ver ejercicio';
+      button.addEventListener('click', () => {
+        const topic = exercise.closest('.topic');
+        const topicTitle = topic?.querySelector('h2')?.textContent || 'Ejercicio';
+        const topicKey = topic?.id || '';
+        const randomExercise = getRandomExercise(topicKey);
+        if (randomExercise) {
+          showExercisePopup(topicTitle, randomExercise.question, randomExercise.answer);
+          return;
+        }
+        let text = '';
+        exercise.childNodes.forEach(node => {
+          if (node === question) return;
+          if (node.nodeType === Node.TEXT_NODE) {
+            text += node.textContent;
+          }
+        });
+        text = text.replace(/^\s*:\s*/, '').trim();
+        if (!text) {
+          text = question.textContent.replace(/^Ejercicio:\s*/i, '').trim();
+        }
+        showExercisePopup(topicTitle, text, expected);
+      });
+      const answerButton = exercise.querySelector('.show-answer');
+      if (answerButton) {
+        exercise.insertBefore(button, answerButton);
+      } else {
+        exercise.appendChild(button);
+      }
+    });
+  </script>
+</body>
+</html>

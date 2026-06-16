@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Página con menú izquierdo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">Mi App</div>
+    <nav>
+      <ul>
+        <li><a href="#">Inicio</a></li>
+        <li><a href="#">Documentación</a></li>
+        <li><a href="#">Proyectos</a></li>
+        <li><a href="#">Equipo</a></li>
+        <li><a href="#">Ajustes</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <header class="topbar">
+    <button id="toggle" class="toggle" aria-label="Mostrar menú">☰</button>
+    <h1>Bienvenido</h1>
+  </header>
+
+  <main class="content">
+    <section>
+      <h2>Contenido principal</h2>
+      <p>Esta plantilla muestra una página con un menú lateral izquierdo, responsive y accesible.</p>
+      <p>Haz clic en los enlaces del menú para navegar o en el icono ☰ para mostrar/ocultar el menú en pantallas pequeñas.</p>
+    </section>
+  </main>
+
+  <script>
+    const toggle = document.getElementById('toggle');
+    const sidebar = document.getElementById('sidebar');
+    toggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+    // Cerrar sidebar al cambiar tamaño de ventana (mejora UX)
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 900) sidebar.classList.remove('open');
+    });
+  </script>
+</body>
+</html>
