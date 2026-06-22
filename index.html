@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Guía SQL — Temas 1-14 (Futurista)</title>
+  <title>Guía SQL — Temas 1-24 (Futurista)</title>
   <style>
     :root{--bg:#050813;--bg2:#0f172a;--surface:#e2e8f0;--surface-muted:#94a3b8;--panel:#0f172a;--accent:#38bdf8;--accent2:#7c3aed;--glow:#22d3ee;--shadow:0 30px 90px rgba(7,15,28,.4);}
     *{box-sizing:border-box}
@@ -62,10 +62,20 @@
         <li><a href="#t8">8. Actualizar registros</a></li>
         <li><a href="#t9">9. Seleccionar registros</a></li>
         <li><a href="#t10">10. Operadores lógicos</a></li>
-        <li><a href="#t11">11. Order By / Limit / Top</a></li>
+          <li><a href="#t11">11. Order By / Limit / Top</a></li>
         <li><a href="#t12">12. Funciones de texto</a></li>
         <li><a href="#t13">13. Funciones numéricas</a></li>
         <li><a href="#t14">14. Fechas y horas</a></li>
+        <li><a href="#t15">15. JOIN básico</a></li>
+        <li><a href="#t16">16. Combinaciones internas y externas</a></li>
+        <li><a href="#t17">17. Subconsultas</a></li>
+        <li><a href="#t18">18. Creación de vistas</a></li>
+        <li><a href="#t19">19. Group By / Having</a></li>
+        <li><a href="#t20">20. Full outer / Cross Join</a></li>
+        <li><a href="#t21">21. Procedimientos almacenados</a></li>
+        <li><a href="#t22">22. Triggers</a></li>
+        <li><a href="#t23">23. Índices</a></li>
+        <li><a href="#t24">24. UDF</a></li>
       </ul>
     </nav>
     <div class="credits">Guía breve • Ejemplos & ejercicios</div>
@@ -73,7 +83,7 @@
 
   <main class="main">
     <header class="head">
-      <h1>Guía rápida de SQL — Temas 1–14</h1>
+      <h1>Guía rápida de SQL — Temas 1–24</h1>
       <p class="subtitle">Diseño futurista, ejemplos y ejercicios con respuestas ocultas.</p>
     </header>
 
@@ -138,7 +148,9 @@ CREATE TABLE Pedidos (
         <div class="exercise">
           <strong>Ejercicio:</strong> ¿Qué ventajas aporta un SGBD frente a guardar datos en archivos separados?
           <button class="show-answer">Mostrar respuesta</button>
-          <div class="answer">Permite relaciones entre tablas, consultas estructuradas con SQL, integridad de datos, seguridad y menor redundancia.</div>
+          <div class="answer">Permite relaciones entre tablas en lugar de archivos aislados.
+Ejemplos: usar JOIN para combinar clientes y pedidos, SELECT para filtrar datos, y constraints para mantener integridad.
+También ofrece seguridad, transacciones y menor redundancia.</div>
         </div>
       </section>
 
@@ -170,7 +182,8 @@ JOIN pedidos p ON c.id = p.cliente_id;
         <div class="exercise">
           <strong>Ejercicio:</strong> Dibuja (mentalmente) el diagrama entidad-relación para clientes y pedidos e indica cardinalidades.
           <button class="show-answer">Mostrar respuesta</button>
-          <div class="answer">Un cliente puede tener 0..N pedidos; cada pedido pertenece a exactamente 1 cliente (1..N).</div>
+          <div class="answer">Un cliente puede tener 0..N pedidos; cada pedido pertenece a 1 cliente.
+Ejemplos: 1:N entre clientes y pedidos, 1:1 entre usuario y perfil, N:M entre estudiantes y cursos.</div>
         </div>
       </section>
 
@@ -211,7 +224,8 @@ CREATE TABLE proveedores (
         <div class="exercise">
           <strong>Ejercicio:</strong> Escribe la sentencia para crear una tabla `categorias` con `id` e `nombre` único.
           <button class="show-answer">Mostrar respuesta</button>
-          <div class="answer">CREATE TABLE categorias (id INT PRIMARY KEY, nombre VARCHAR(100) UNIQUE NOT NULL);</div>
+          <div class="answer">CREATE TABLE categorias (id INT PRIMARY KEY, nombre VARCHAR(100) UNIQUE NOT NULL);
+O también: CREATE TABLE categorias (id INT NOT NULL PRIMARY KEY, nombre VARCHAR(100) NOT NULL, CONSTRAINT uq_nombre UNIQUE(nombre));</div>
         </div>
       </section>
 
@@ -242,7 +256,8 @@ DROP TABLE temporal;
         <div class="exercise">
           <strong>Ejercicio:</strong> ¿Cómo renombrarías la columna `nombre` a `nombre_completo` en `clientes`?
           <button class="show-answer">Mostrar respuesta</button>
-          <div class="answer">ALTER TABLE clientes RENAME COLUMN nombre TO nombre_completo; (varía según SGBD)</div>
+          <div class="answer">ALTER TABLE clientes RENAME COLUMN nombre TO nombre_completo; (MySQL/Postgres)
+-- SQL Server: EXEC sp_rename 'clientes.nombre','nombre_completo','COLUMN';</div>
         </div>
       </section>
 
@@ -282,7 +297,8 @@ CREATE TABLE orden_detalle (
         <div class="exercise">
           <strong>Ejercicio:</strong> ¿Qué problema resuelve la normalización respecto a las actualizaciones de datos?
           <button class="show-answer">Mostrar respuesta</button>
-          <div class="answer">Evita anomalías de actualización y elimina la duplicación de información.</div>
+          <div class="answer">Evita anomalías de actualización y duplicación de datos.
+Ejemplos: no repetir datos de cliente en cada pedido, almacenar direcciones en una tabla separada, usar foreign key para mantener consistencia.</div>
         </div>
       </section>
 
@@ -334,7 +350,8 @@ SELECT * FROM alumnos;
         <div class="exercise">
           <strong>Ejercicio:</strong> Inserta un nuevo alumno con `id_alumno`, nombre, apellido, edad y carrera.
           <button class="show-answer">Mostrar respuesta</button>
-          <div class="answer">INSERT INTO alumnos VALUES ('007','Luis','Gomez',21,'Redes');</div>
+          <div class="answer">INSERT INTO alumnos VALUES ('007','Luis','Gomez',21,'Redes');
+INSERT INTO alumnos (id_alumno,nombre,apellido,edad,carrera) VALUES ('007','Luis','Gomez',21,'Redes');</div>
         </div>
       </section>
 
@@ -385,7 +402,8 @@ WHERE id IN (2, 5, 8);
         <div class="exercise">
           <strong>Ejercicio:</strong> Elimina los usuarios cuyo `id` sea 2, 5 u 8.
           <button class="show-answer">Mostrar respuesta</button>
-          <div class="answer">DELETE FROM usuarios WHERE id IN (2, 5, 8);</div>
+          <div class="answer">DELETE FROM usuarios WHERE id IN (2, 5, 8);
+DELETE FROM usuarios WHERE id = 2 OR id = 5 OR id = 8;</div>
         </div>
       </section>
 
@@ -465,7 +483,9 @@ WHERE id = 5;
         <div class="exercise">
           <strong>Ejercicio:</strong> Actualiza el correo y la edad del usuario con id = 1.
           <button class="show-answer">Mostrar respuesta</button>
-          <div class="answer">UPDATE usuarios SET email = 'ana_nuevo@mail.com', edad = 27 WHERE id = 1;</div>
+          <div class="answer">UPDATE usuarios SET email = 'ana_nuevo@mail.com', edad = 27 WHERE id = 1;
+UPDATE usuarios SET email = 'ana_nuevo@mail.com' WHERE id = 1;
+UPDATE usuarios SET edad = 27 WHERE id = 1;</div>
         </div>
       </section>
 
@@ -538,7 +558,8 @@ ORDER BY nombre;</pre>
         <div class="exercise">
           <strong>Ejercicio:</strong> Escribe una consulta que devuelva estudiantes de la carrera 'Redes' ordenados por apellido.
           <button class="show-answer">Mostrar respuesta</button>
-          <div class="answer">SELECT * FROM Estudiantes WHERE carrera = 'Redes' ORDER BY apellido;</div>
+          <div class="answer">SELECT * FROM Estudiantes WHERE carrera = 'Redes' ORDER BY apellido;
+SELECT nombre, apellido FROM Estudiantes WHERE carrera = 'Redes' ORDER BY apellido;</div>
         </div>
       </section>
 
@@ -567,7 +588,8 @@ SELECT * FROM clientes WHERE estado <> 'inactivo' AND email IS NOT NULL;
         <div class="exercise">
           <strong>Ejercicio:</strong> Filtra órdenes del cliente 5 con total mayor a 100 o con estado 'urgente'.
           <button class="show-answer">Mostrar respuesta</button>
-          <div class="answer">SELECT * FROM ordenes WHERE cliente_id=5 AND (total &gt; 100 OR estado='urgente');</div>
+          <div class="answer">SELECT * FROM ordenes WHERE cliente_id = 5 AND (total &gt; 100 OR estado = 'urgente');
+SELECT * FROM ordenes WHERE (cliente_id = 5 AND total &gt; 100) OR (cliente_id = 5 AND estado = 'urgente');</div>
         </div>
       </section>
 
@@ -597,7 +619,9 @@ SELECT * FROM productos ORDER BY nombre ASC LIMIT 10 OFFSET 20;
         <div class="exercise">
           <strong>Ejercicio:</strong> Devuelve los 5 clientes con más pedidos.
           <button class="show-answer">Mostrar respuesta</button>
-          <div class="answer">SELECT c.id, c.nombre, COUNT(o.id) AS num_pedidos FROM clientes c JOIN ordenes o ON c.id=o.cliente_id GROUP BY c.id,c.nombre ORDER BY num_pedidos DESC LIMIT 5;</div>
+          <div class="answer">SELECT c.id, c.nombre, COUNT(o.id) AS num_pedidos FROM clientes c JOIN ordenes o ON c.id = o.cliente_id GROUP BY c.id, c.nombre ORDER BY num_pedidos DESC LIMIT 5;
+-- SQL Server
+SELECT TOP 5 c.id, c.nombre, COUNT(o.id) AS num_pedidos FROM clientes c JOIN ordenes o ON c.id = o.cliente_id GROUP BY c.id, c.nombre ORDER BY num_pedidos DESC;</div>
         </div>
       </section>
 
@@ -605,12 +629,15 @@ SELECT * FROM productos ORDER BY nombre ASC LIMIT 10 OFFSET 20;
         <h2>12. Funciones de texto</h2>
         <p>Funciones como CONCAT, SUBSTRING, UPPER, LOWER, TRIM, LENGTH.</p>
         <div class="topic-info">Las funciones de texto permiten transformar y evaluar cadenas. Útiles para normalizar datos, extraer partes de un email o construir informes personalizados.</div>
+        <img class="topic-image" src="img/select.jpeg" alt="Funciones de texto" />
         <pre class="sql">SELECT CONCAT(nombre,' ',apellido) AS nombre_completo FROM usuarios;
 SELECT UPPER(email) FROM usuarios;
 
 -- Más ejemplos de texto
 SELECT TRIM(nombre) AS limpio, LENGTH(email) AS largo_email FROM usuarios;
 SELECT SUBSTRING(nombre,1,10) AS prefijo FROM usuarios;
+SELECT REPLACE(nombre,'Maria','María') AS nombre_corregido FROM usuarios;
+SELECT CONCAT(SUBSTRING(nombre,1,1),'. ',apellido) AS iniciales FROM usuarios;
 </pre>
         <div class="topic-info">
           <strong>PDF descargable</strong>
@@ -625,12 +652,14 @@ SELECT SUBSTRING(nombre,1,10) AS prefijo FROM usuarios;
             <li>SELECT LOWER(nombre) FROM empleados;</li>
             <li>SELECT TRIM(nombre) AS limpio FROM clientes;</li>
             <li>SELECT SUBSTRING(nombre,1,10) AS prefijo FROM usuarios;</li>
+            <li>SELECT REPLACE(email,'@example.com','@gmail.com') FROM usuarios;</li>
+            <li>SELECT CONCAT(SUBSTRING(nombre,1,1),'. ',apellido) AS iniciales FROM usuarios;</li>
           </ul>
         </div>
         <div class="exercise">
           <strong>Ejercicio:</strong> Extrae el dominio del email (texto después de @).
           <button class="show-answer">Mostrar respuesta</button>
-          <div class="answer">En Postgres: SELECT split_part(email,'@',2) AS dominio FROM usuarios; En MySQL: SUBSTRING_INDEX(email,'@',-1)</div>
+          <div class="answer">En Postgres: SELECT split_part(email,'@',2) AS dominio FROM usuarios; En MySQL: SELECT SUBSTRING_INDEX(email,'@',-1) AS dominio FROM usuarios; En SQL Server: SELECT PARSENAME(REPLACE(email,'@','.'),1) AS dominio FROM usuarios;</div>
         </div>
       </section>
 
@@ -646,6 +675,8 @@ SELECT COUNT(*) FROM usuarios WHERE fecha_registro &gt; '2024-01-01';
 -- Ejemplo adicional: sumas, mínimos y máximos
 SELECT SUM(total) AS total_ventas, MIN(total) AS venta_minima, MAX(total) AS venta_maxima FROM ordenes;
 SELECT ROUND(AVG(total), 2) AS promedio_redondeado FROM ordenes;
+SELECT FLOOR(precio) AS precio_redondeado, CEIL(precio) AS precio_techo FROM productos;
+SELECT SUM(cantidad) AS total_items FROM orden_detalle;
 </pre>
         <div class="topic-info">
           <strong>Funciones numéricas clave</strong>
@@ -700,11 +731,14 @@ SELECT ROUND(AVG(total), 2) AS promedio_redondeado FROM ordenes;
             <li>SELECT COUNT(*) FROM usuarios WHERE fecha_registro &gt; '2024-01-01';</li>
             <li>SELECT MAX(precio) FROM productos;</li>
             <li>SELECT MIN(precio) FROM productos;</li>
+            <li>SELECT FLOOR(precio) AS precio_redondeado FROM productos;</li>
+            <li>SELECT CEIL(precio) AS precio_techo FROM productos;</li>
           </ul>
         </div>
         <div class="exercise">
           <strong>Ejercicio:</strong> Calcula la suma total de ventas por mes.
-          <div class="answer">SELECT DATE_TRUNC('month', fecha) AS mes, SUM(total) FROM ordenes GROUP BY mes ORDER BY mes;</div>
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">SELECT DATE_TRUNC('month', fecha) AS mes, SUM(total) FROM ordenes GROUP BY mes ORDER BY mes; En MySQL: SELECT DATE_FORMAT(fecha,'%Y-%m') AS mes, SUM(total) FROM ordenes GROUP BY mes ORDER BY mes; En SQL Server: SELECT FORMAT(fecha,'yyyy-MM') AS mes, SUM(total) FROM ordenes GROUP BY FORMAT(fecha,'yyyy-MM') ORDER BY mes;</div>
         </div>
       </section>
 
@@ -723,6 +757,8 @@ SELECT EXTRACT(YEAR FROM fecha) AS anio FROM ordenes;
 -- Ejemplo adicional: añadir un mes y agrupar por día
 SELECT DATE_ADD(fecha, INTERVAL 1 MONTH) AS fecha_mas_un_mes FROM ordenes;
 SELECT DATE_TRUNC('day', fecha) AS dia, SUM(total) FROM ordenes GROUP BY dia ORDER BY dia;
+SELECT DATE_SUB(fecha, INTERVAL 30 DAY) AS hace_30_dias FROM ordenes;
+SELECT EXTRACT(MONTH FROM fecha) AS mes, SUM(total) FROM ordenes GROUP BY mes;
 </pre>
         <div class="topic-info">
           <strong>Ejemplos:</strong>
@@ -732,12 +768,349 @@ SELECT DATE_TRUNC('day', fecha) AS dia, SUM(total) FROM ordenes GROUP BY dia ORD
             <li>SELECT DATE_ADD(fecha, INTERVAL 1 MONTH) FROM ordenes;</li>
             <li>SELECT DATE_TRUNC('day', fecha) AS dia FROM ordenes;</li>
             <li>SELECT DATE(fecha) AS dia FROM ordenes WHERE fecha &gt; '2024-01-01';</li>
+            <li>SELECT EXTRACT(MONTH FROM fecha) AS mes FROM ordenes;</li>
+            <li>SELECT DATE_SUB(fecha, INTERVAL 7 DAY) FROM ordenes;</li>
           </ul>
         </div>
         <div class="exercise">
           <strong>Ejercicio:</strong> Escribe una consulta que muestre ventas diarias de la última semana.
           <button class="show-answer">Mostrar respuesta</button>
-          <div class="answer">SELECT DATE(fecha) AS dia, SUM(total) FROM ordenes WHERE fecha &gt; NOW() - INTERVAL '7 days' GROUP BY dia ORDER BY dia;</div>
+          <div class="answer">SELECT DATE(fecha) AS dia, SUM(total) FROM ordenes WHERE fecha &gt; NOW() - INTERVAL '7 days' GROUP BY dia ORDER BY dia; En MySQL: SELECT DATE(fecha) AS dia, SUM(total) FROM ordenes WHERE fecha &gt; DATE_SUB(NOW(), INTERVAL 7 DAY) GROUP BY dia ORDER BY dia; En SQL Server: SELECT CONVERT(date, fecha) AS dia, SUM(total) FROM ordenes WHERE fecha &gt; DATEADD(day,-7,GETDATE()) GROUP BY CONVERT(date, fecha) ORDER BY dia;</div>
+        </div>
+      </section>
+
+      <section id="t15" class="topic">
+        <h2>15. JOIN básico</h2>
+        <p>Combinar tablas con JOIN para obtener filas relacionadas de más de una tabla.</p>
+        <div class="topic-info">INNER JOIN, LEFT JOIN y RIGHT JOIN permiten unir datos de tablas distintas según una condición de relación.</div>
+        <pre class="sql">SELECT c.nombre, o.total
+FROM clientes c
+JOIN ordenes o ON c.id = o.cliente_id;
+
+-- LEFT JOIN para ver todos los clientes aunque no tengan órdenes
+SELECT c.nombre, o.total
+FROM clientes c
+LEFT JOIN ordenes o ON c.id = o.cliente_id;
+
+-- Combinar varias tablas con alias
+SELECT c.nombre, o.id AS pedido_id, p.nombre AS producto
+FROM clientes c
+JOIN ordenes o ON c.id = o.cliente_id
+JOIN productos p ON o.producto_id = p.id;
+</pre>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>SELECT c.nombre, o.total FROM clientes c JOIN ordenes o ON c.id = o.cliente_id;</li>
+            <li>SELECT c.nombre, o.total FROM clientes c LEFT JOIN ordenes o ON c.id = o.cliente_id;</li>
+            <li>SELECT c.nombre, o.total FROM clientes c RIGHT JOIN ordenes o ON c.id = o.cliente_id;</li>
+            <li>SELECT c.nombre, p.nombre FROM clientes c JOIN ordenes o ON c.id = o.cliente_id JOIN productos p ON o.producto_id = p.id;</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Muestra nombre de cliente y total de orden usando JOIN.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">SELECT c.nombre, o.total FROM clientes c JOIN ordenes o ON c.id = o.cliente_id; También: SELECT clientes.nombre, ordenes.total FROM clientes JOIN ordenes ON clientes.id = ordenes.cliente_id;</div>
+        </div>
+      </section>
+
+      <section id="t16" class="topic">
+        <h2>16. Combinaciones internas y externas</h2>
+        <p>INNER JOIN devuelve solo coincidencias; LEFT/RIGHT JOIN devuelven todas las filas de una tabla y las coincidencias de la otra.</p>
+        <div class="topic-info">Las combinaciones internas y externas permiten ver datos relacionados y también filas sin coincidencia en una de las tablas.</div>
+        <pre class="sql">-- INNER JOIN devuelve solo coincidencias
+SELECT p.nombre, c.nombre AS cliente
+FROM pedidos p
+INNER JOIN clientes c ON p.cliente_id = c.id;
+
+-- LEFT JOIN muestra todos los pedidos y clientes cuando existen
+SELECT p.id, c.nombre
+FROM pedidos p
+LEFT JOIN clientes c ON p.cliente_id = c.id;
+
+-- RIGHT JOIN muestra todos los clientes y pedidos coincidentes
+SELECT p.id, c.nombre
+FROM pedidos p
+RIGHT JOIN clientes c ON p.cliente_id = c.id;
+
+-- JOIN con alias y condiciones adicionales
+SELECT p.id, c.nombre, o.total
+FROM pedidos p
+INNER JOIN clientes c ON p.cliente_id = c.id
+INNER JOIN ordenes o ON o.cliente_id = c.id
+WHERE o.total &gt; 100;
+</pre>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>INNER JOIN: solo registros que tienen relación en ambas tablas.</li>
+            <li>LEFT JOIN: todas las filas de la tabla izquierda y coincidencias de la derecha.</li>
+            <li>RIGHT JOIN: todas las filas de la tabla derecha y coincidencias de la izquierda.</li>
+            <li>Usar alias facilita consultas con varias tablas.</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Usa LEFT JOIN para mostrar clientes aunque no tengan pedidos.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">SELECT c.nombre, o.id AS pedido_id FROM clientes c LEFT JOIN ordenes o ON c.id = o.cliente_id; También: SELECT clientes.nombre, ordenes.id AS pedido_id FROM clientes LEFT JOIN ordenes ON clientes.id = ordenes.cliente_id;</div>
+        </div>
+      </section>
+
+      <section id="t17" class="topic">
+        <h2>17. Subconsultas</h2>
+        <p>Una subconsulta anidada devuelve datos que luego se usan en la consulta externa.</p>
+        <div class="topic-info">Las subconsultas permiten filtrar, comparar o calcular valores entre diferentes consultas sin usar tablas temporales.</div>
+        <pre class="sql">-- Subconsulta en WHERE
+SELECT nombre FROM clientes
+WHERE id IN (SELECT cliente_id FROM ordenes WHERE total &gt; 100);
+
+-- Subconsulta en SELECT
+SELECT nombre,
+  (SELECT COUNT(*) FROM ordenes o WHERE o.cliente_id = c.id) AS total_pedidos
+FROM clientes c;
+
+-- Subconsulta con comparación de fecha
+SELECT nombre FROM clientes
+WHERE id = (SELECT cliente_id FROM ordenes WHERE fecha = '2024-01-01');
+</pre>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>Buscar clientes con pedidos mayores a 100.</li>
+            <li>Contar órdenes de cada cliente dentro de una subconsulta.</li>
+            <li>Usar subconsulta para comparar un valor con un promedio.</li>
+            <li>Filtrar con una subconsulta que devuelve un solo valor.</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Selecciona clientes con más de 5 pedidos usando subconsulta.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">SELECT nombre FROM clientes WHERE id IN (SELECT cliente_id FROM ordenes GROUP BY cliente_id HAVING COUNT(*) &gt; 5); También: SELECT nombre FROM clientes c WHERE EXISTS (SELECT 1 FROM ordenes o WHERE o.cliente_id = c.id GROUP BY o.cliente_id HAVING COUNT(*) &gt; 5);</div>
+        </div>
+      </section>
+
+      <section id="t18" class="topic">
+        <h2>18. Creación de vistas</h2>
+        <p>CREATE VIEW guarda una consulta como una vista reutilizable.</p>
+        <div class="topic-info">Las vistas simplifican consultas complejas y mejoran la legibilidad al tratar resultados predefinidos como tablas virtuales.</div>
+        <pre class="sql">CREATE VIEW vista_clientes_pedidos AS
+SELECT c.nombre, o.id AS pedido_id, o.total
+FROM clientes c
+JOIN ordenes o ON c.id = o.cliente_id;
+
+SELECT * FROM vista_clientes_pedidos;
+
+CREATE VIEW vista_totales AS
+SELECT cliente_id, SUM(total) AS total_ventas
+FROM ordenes
+GROUP BY cliente_id;
+
+SELECT * FROM vista_totales WHERE total_ventas &gt; 500;
+</pre>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>Crear vista de clientes con totales de pedidos.</li>
+            <li>Usar la vista para consultar sin repetir la JOIN.</li>
+            <li>Las vistas facilitan informes y consultas compartidas.</li>
+            <li>Filtrar desde la vista como si fuera una tabla normal.</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Crea una vista para ver el nombre del cliente y el total de cada orden.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">CREATE VIEW vista_ordenes AS SELECT c.nombre, o.total FROM clientes c JOIN ordenes o ON c.id = o.cliente_id; Luego usar: SELECT * FROM vista_ordenes; Alternativa: CREATE VIEW ordenes_cliente AS SELECT clientes.nombre, ordenes.total FROM clientes JOIN ordenes ON clientes.id = ordenes.cliente_id;</div>
+        </div>
+      </section>
+
+      <section id="t19" class="topic">
+        <h2>19. Agrupación de resultados / Group By / Having</h2>
+        <p>GROUP BY agrupa filas; HAVING filtra grupos después de aplicar agregaciones.</p>
+        <div class="topic-info">GROUP BY resume datos por categoría, como totales por cliente. HAVING selecciona los grupos que cumplen condiciones específicas.</div>
+        <pre class="sql">SELECT cliente_id, COUNT(*) AS pedidos, SUM(total) AS total_ventas
+FROM ordenes
+GROUP BY cliente_id
+HAVING SUM(total) &gt; 1000;
+
+SELECT producto_id, AVG(precio) AS precio_promedio
+FROM orden_detalle
+GROUP BY producto_id
+HAVING AVG(precio) &gt; 100;
+</pre>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>Contar pedidos por cliente.</li>
+            <li>Sumar ventas por día o por producto.</li>
+            <li>Filtrar grupos con HAVING.</li>
+            <li>Usar GROUP BY con varias columnas.</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Muestra clientes con más de 5 pedidos y el total de ventas.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">SELECT cliente_id, COUNT(*) AS pedidos, SUM(total) AS total_ventas FROM ordenes GROUP BY cliente_id HAVING COUNT(*) &gt; 5; También: SELECT cliente_id, SUM(total) AS total_ventas FROM ordenes GROUP BY cliente_id HAVING SUM(total) &gt; 1000;</div>
+        </div>
+      </section>
+
+      <section id="t20" class="topic">
+        <h2>20. Full outer join / Cross join</h2>
+        <p>FULL OUTER JOIN combina todas las filas de ambas tablas; CROSS JOIN genera el producto cartesiano.</p>
+        <div class="topic-info">FULL OUTER JOIN devuelve filas coincidentes y no coincidentes de ambas tablas. CROSS JOIN combina cada fila de una tabla con todas las filas de la otra.</div>
+        <pre class="sql">-- Full outer join (puede variar según SGBD)
+SELECT c.nombre, o.id AS pedido_id
+FROM clientes c
+FULL OUTER JOIN ordenes o ON c.id = o.cliente_id;
+
+-- Cross join: cada cliente con cada producto
+SELECT c.nombre, p.nombre AS producto
+FROM clientes c
+CROSS JOIN productos p;
+
+-- Producto cartesiano con filtro
+SELECT c.nombre, p.nombre AS producto
+FROM clientes c
+CROSS JOIN productos p
+WHERE p.precio &gt; 50;
+</pre>
+        <div class="topic-info">
+          <ul>
+            <li>FULL OUTER JOIN devuelve todas las filas, incluso sin coincidencia.</li>
+            <li>CROSS JOIN produce todas las combinaciones posibles.</li>
+            <li>Usa CROSS JOIN con cuidado: puede generar muchas filas.</li>
+            <li>Filtrar los resultados reduce el volumen del producto cartesiano.</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Crea una consulta CROSS JOIN que combine clientes y productos.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">SELECT c.nombre, p.nombre FROM clientes c CROSS JOIN productos p; También: SELECT clientes.nombre, productos.nombre FROM clientes CROSS JOIN productos;</div>
+        </div>
+      </section>
+
+      <section id="t21" class="topic">
+        <h2>21. Procedimientos almacenados</h2>
+        <p>Un procedimiento almacenado encapsula lógica SQL y se guarda en el servidor.</p>
+        <div class="topic-info">Los procedimientos guardan consultas, cálculos y actualizaciones en una rutina que se puede ejecutar con parámetros.</div>
+        <pre class="sql">CREATE PROCEDURE ObtenerPedidosCliente(IN clienteID INT)
+BEGIN
+  SELECT * FROM ordenes WHERE cliente_id = clienteID;
+END;
+
+CALL ObtenerPedidosCliente(3);
+
+CREATE PROCEDURE AgregarCliente(IN p_nombre VARCHAR(100))
+BEGIN
+  INSERT INTO clientes(nombre) VALUES (p_nombre);
+END;
+
+CALL AgregarCliente('Luis');
+</pre>
+        <div class="topic-info">
+          <strong>Beneficios:</strong>
+          <ul>
+            <li>Reutilización de lógica.</li>
+            <li>Menos errores al repetir consultas.</li>
+            <li>Ejecuta tareas complejas en el servidor.</li>
+            <li>Puedes recibir parámetros y devolver resultados.</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Define un procedimiento que devuelva órdenes de un cliente dado.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">CREATE PROCEDURE ObtenerPedidosCliente(IN clienteID INT) BEGIN SELECT * FROM ordenes WHERE cliente_id = clienteID; END; CALL ObtenerPedidosCliente(3); También: CREATE PROCEDURE ObtenerPedidosCliente (IN p_cliente_id INT) BEGIN SELECT id, total, fecha FROM ordenes WHERE cliente_id = p_cliente_id; END;</div>
+        </div>
+      </section>
+
+      <section id="t22" class="topic">
+        <h2>22. Triggers</h2>
+        <p>Triggers ejecutan acciones automáticamente cuando ocurren eventos como INSERT, UPDATE o DELETE.</p>
+        <div class="topic-info">Los triggers permiten ejecutar validaciones o actualizaciones automáticas en la base de datos después de cambios en las tablas.</div>
+        <pre class="sql">CREATE TRIGGER actualiza_fecha_modificacion
+BEFORE UPDATE ON productos
+FOR EACH ROW
+SET NEW.fecha_modificacion = NOW();
+
+CREATE TRIGGER historial_orden
+AFTER INSERT ON ordenes
+FOR EACH ROW
+INSERT INTO historial_ordenes (orden_id, fecha) VALUES (NEW.id, NOW());
+</pre>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>Registrar cambios de datos.</li>
+            <li>Actualizar fechas automáticamente.</li>
+            <li>Validar datos antes de insertarlos.</li>
+            <li>Guardar histórico de acciones automáticamente.</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Crea un trigger que actualice la fecha de modificación al actualizar un producto.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">CREATE TRIGGER actualiza_fecha_modificacion BEFORE UPDATE ON productos FOR EACH ROW SET NEW.fecha_modificacion = NOW(); También: CREATE TRIGGER actualiza_fecha_modificacion AFTER UPDATE ON productos FOR EACH ROW BEGIN UPDATE productos SET fecha_modificacion = NOW() WHERE id = NEW.id; END;</div>
+        </div>
+      </section>
+
+      <section id="t23" class="topic">
+        <h2>23. Índices</h2>
+        <p>Los índices aceleran las búsquedas y las consultas en columnas usadas frecuentemente en WHERE y JOIN.</p>
+        <div class="topic-info">Un índice aparece como una estructura interna que permite localizar filas más rápido sin escanear toda la tabla.</div>
+        <pre class="sql">CREATE INDEX idx_cliente_id ON ordenes(cliente_id);
+CREATE INDEX idx_email ON usuarios(email);
+CREATE UNIQUE INDEX idx_orden_unica ON ordenes(orden_numero);
+
+-- Ver índices en SQL Server
+-- SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID('ordenes');
+</pre>
+        <div class="topic-info">
+          <strong>Ventajas:</strong>
+          <ul>
+            <li>Consultas más rápidas.</li>
+            <li>Mejora el rendimiento en JOINs y filtros.</li>
+            <li>Útil en columnas de búsqueda frecuente.</li>
+            <li>Un índice único evita duplicados en valores críticos.</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Crea un índice para la columna `email` en `usuarios`.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">CREATE INDEX idx_email ON usuarios(email); También: CREATE UNIQUE INDEX idx_email_unico ON usuarios(email);</div>
+        </div>
+      </section>
+
+      <section id="t24" class="topic">
+        <h2>24. UDF</h2>
+        <p>Una UDF es una función definida por el usuario para reutilizar lógica dentro de consultas.</p>
+        <div class="topic-info">Las funciones UDF pueden devolver valores calculados y usarse en SELECT, WHERE o HAVING.</div>
+        <pre class="sql">CREATE FUNCTION calcular_descuento(total DECIMAL(10,2))
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+RETURN total * 0.9;
+
+SELECT nombre, calcular_descuento(total) AS total_con_descuento FROM ordenes;
+
+CREATE FUNCTION es_mayor_edad(edad INT)
+RETURNS BOOLEAN
+DETERMINISTIC
+RETURN edad >= 18;
+
+SELECT nombre FROM alumnos WHERE es_mayor_edad(edad);
+</pre>
+        <div class="topic-info">
+          <strong>Ejemplos:</strong>
+          <ul>
+            <li>Calcular descuentos o impuestos.</li>
+            <li>Normalizar cálculos complejos en una función.</li>
+            <li>Reutilizar lógica en varias consultas.</li>
+            <li>Usar funciones en WHERE, SELECT o HAVING.</li>
+          </ul>
+        </div>
+        <div class="exercise">
+          <strong>Ejercicio:</strong> Crea una función que aplique un descuento del 10% al total.
+          <button class="show-answer">Mostrar respuesta</button>
+          <div class="answer">CREATE FUNCTION calcular_descuento(total DECIMAL(10,2)) RETURNS DECIMAL(10,2) DETERMINISTIC RETURN total * 0.9; SELECT calcular_descuento(100) AS descuento;
+También: CREATE FUNCTION calcular_descuento(total DECIMAL(10,2)) RETURNS DECIMAL(10,2) BEGIN RETURN total * 0.9; END;</div>
         </div>
       </section>
 
@@ -838,6 +1211,56 @@ SELECT DATE_TRUNC('day', fecha) AS dia, SUM(total) FROM ordenes GROUP BY dia ORD
         {question: 'Escribe una consulta que muestre ventas diarias de la última semana.', answer: 'SELECT DATE(fecha) AS dia, SUM(total) FROM ordenes WHERE fecha > NOW() - INTERVAL \'7 days\' GROUP BY dia ORDER BY dia;'},
         {question: '¿Qué función extrae el año de una fecha?', answer: 'EXTRACT(YEAR FROM fecha) AS anio.'},
         {question: '¿Cómo filtras datos de los últimos 7 días?', answer: 'WHERE fecha > NOW() - INTERVAL \'7 days\''}
+      ],
+      t15: [
+        {question: 'Muestra nombre de cliente y total de orden usando JOIN.', answer: 'SELECT c.nombre, o.total FROM clientes c JOIN ordenes o ON c.id = o.cliente_id;'},
+        {question: '¿Cuál es la diferencia entre JOIN y INNER JOIN?', answer: 'Ambos devuelven solo coincidencias; JOIN suele ser un alias de INNER JOIN.'},
+        {question: '¿Para qué se usan alias de tabla en JOIN?', answer: 'Para escribir consultas más cortas y claras cuando se usan varias tablas.'}
+      ],
+      t16: [
+        {question: 'Usa LEFT JOIN para mostrar clientes aunque no tengan pedidos.', answer: 'SELECT c.nombre, o.id AS pedido_id FROM clientes c LEFT JOIN ordenes o ON c.id = o.cliente_id;'},
+        {question: '¿Qué devuelve un RIGHT JOIN?', answer: 'Todas las filas de la tabla derecha y las coincidencias de la izquierda.'},
+        {question: '¿Qué registros incluye un INNER JOIN?', answer: 'Solo los que tienen coincidencia en ambas tablas.'}
+      ],
+      t17: [
+        {question: 'Selecciona clientes con más de 5 pedidos usando subconsulta.', answer: 'SELECT nombre FROM clientes WHERE id IN (SELECT cliente_id FROM ordenes GROUP BY cliente_id HAVING COUNT(*) > 5);'},
+        {question: '¿Qué es una subconsulta en SELECT?', answer: 'Es una consulta que se usa para calcular un valor dentro de la lista de selección.'},
+        {question: '¿Cómo usar una subconsulta en WHERE?', answer: 'WHERE id IN (SELECT cliente_id FROM ordenes WHERE total > 100);'}
+      ],
+      t18: [
+        {question: 'Crea una vista para ver el nombre del cliente y el total de cada orden.', answer: 'CREATE VIEW vista_ordenes AS SELECT c.nombre, o.total FROM clientes c JOIN ordenes o ON c.id = o.cliente_id;'},
+        {question: '¿Cómo consultas una vista?', answer: 'SELECT * FROM vista_ordenes;'},
+        {question: '¿Para qué sirve una vista en SQL?', answer: 'Para reutilizar consultas complejas como si fueran tablas virtuales.'}
+      ],
+      t19: [
+        {question: 'Muestra clientes con más de 5 pedidos y el total de ventas.', answer: 'SELECT cliente_id, COUNT(*) AS pedidos, SUM(total) AS total_ventas FROM ordenes GROUP BY cliente_id HAVING COUNT(*) > 5;'},
+        {question: '¿Qué hace HAVING?', answer: 'Filtra grupos después de aplicar GROUP BY.'},
+        {question: '¿Qué hace GROUP BY?', answer: 'Agrupa filas con valores iguales en columnas seleccionadas.'}
+      ],
+      t20: [
+        {question: 'Crea una consulta CROSS JOIN que combine clientes y productos.', answer: 'SELECT c.nombre, p.nombre FROM clientes c CROSS JOIN productos p;'},
+        {question: '¿Qué es un producto cartesiano?', answer: 'El conjunto de todas las combinaciones posibles entre filas de dos tablas.'},
+        {question: '¿Cómo funciona FULL OUTER JOIN?', answer: 'Devuelve todas las filas de ambas tablas, coincidentes y no coincidentes.'}
+      ],
+      t21: [
+        {question: 'Define un procedimiento que devuelva órdenes de un cliente dado.', answer: 'CREATE PROCEDURE ObtenerPedidosCliente(IN clienteID INT) BEGIN SELECT * FROM ordenes WHERE cliente_id = clienteID; END; CALL ObtenerPedidosCliente(3);'},
+        {question: '¿Qué ventaja tiene un procedimiento almacenado?', answer: 'Reutiliza lógica SQL y reduce errores al repetir consultas.'},
+        {question: '¿Cómo llamas un procedimiento almacenado?', answer: 'CALL NombreProcedimiento(parametros);'}
+      ],
+      t22: [
+        {question: 'Crea un trigger que actualice la fecha de modificación al actualizar un producto.', answer: 'CREATE TRIGGER actualiza_fecha_modificacion BEFORE UPDATE ON productos FOR EACH ROW SET NEW.fecha_modificacion = NOW();'},
+        {question: '¿Cuándo se ejecuta un trigger AFTER INSERT?', answer: 'Después de insertar un registro en la tabla especificada.'},
+        {question: '¿Para qué sirven los triggers?', answer: 'Para ejecutar acciones automáticas ante cambios en las tablas.'}
+      ],
+      t23: [
+        {question: 'Crea un índice para la columna email en usuarios.', answer: 'CREATE INDEX idx_email ON usuarios(email);'},
+        {question: '¿Qué beneficio da un índice en una columna de búsqueda frecuente?', answer: 'Acelera las consultas filtradas sobre esa columna.'},
+        {question: '¿Qué indexación evita duplicados?', answer: 'CREATE UNIQUE INDEX.'}
+      ],
+      t24: [
+        {question: 'Crea una función que aplique un descuento del 10% al total.', answer: 'CREATE FUNCTION calcular_descuento(total DECIMAL(10,2)) RETURNS DECIMAL(10,2) DETERMINISTIC RETURN total * 0.9; SELECT calcular_descuento(100) AS descuento;'},
+        {question: '¿Qué es una UDF?', answer: 'Una función definida por el usuario que devuelve un valor calculado.'},
+        {question: '¿Dónde puedes usar una UDF?', answer: 'En SELECT, WHERE o HAVING para aplicar lógica reutilizable.'}
       ]
     };
     const lastQuestionIndex = {};
